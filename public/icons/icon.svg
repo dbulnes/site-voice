@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+  </defs>
+  <!-- Background Rounded Squircle -->
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#bgGrad)" />
+  <!-- Speaker Icon -->
+  <path d="M42 48 L28 48 C25.8 48 24 49.8 24 52 L24 76 C24 78.2 25.8 80 28 80 L42 80 L62 96 C64.5 98 68 96.2 68 93 L68 35 C68 31.8 64.5 30 62 32 Z" fill="#ffffff" />
+  <!-- Sound Waves -->
+  <path d="M80 46 C88 54 88 74 80 82" fill="none" stroke="url(#accentGrad)" stroke-width="8" stroke-linecap="round" />
+  <path d="M94 34 C108 48 108 80 94 94" fill="none" stroke="url(#accentGrad)" stroke-width="8" stroke-linecap="round" />
+</svg>

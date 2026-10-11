@@ -1,0 +1,32 @@
+{
+  "name": "site-voice",
+  "version": "1.0.0",
+  "description": "A Chrome Extension (Manifest V3) to read any webpage aloud using local VoiceMode / Kokoro TTS.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/cleaner_and_chunker.test.ts"
+  },
+  "keywords": [
+    "tts",
+    "kokoro",
+    "voicemode",
+    "chrome-extension",
+    "readability",
+    "speech"
+  ],
+  "author": "David Bulnes",
+  "license": "MIT",
+  "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "dompurify": "^3.2.4"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.312",
+    "@types/node": "^22.13.10",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "vite": "^8.3.4"
+  }
+}

@@ -98,7 +98,43 @@ export class KokoroClient {
     return KOKORO_VOICES;
   }
 
+  /**
+   * Synthesize with retries. The local Kokoro service may be restarted by launchd
+   * (e.g. UVICORN_LIMIT_MAX_REQUESTS) mid-article; during the few seconds it takes
+   * to reload the model, connections are refused. Retry network failures and 5xx
+   * with backoff instead of failing the whole read.
+   */
   public async synthesize(
+    text: string,
+    options?: { voice?: string; speed?: number; timeoutMs?: number; maxRetries?: number }
+  ): Promise<Blob> {
+    const maxRetries = options?.maxRetries ?? 6;
+    const delays = [300, 700, 1500, 2500, 4000, 6000];
+    let lastErr: any;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await this.synthesizeOnce(text, options);
+      } catch (err: any) {
+        lastErr = err;
+        if (!KokoroClient.isRetryable(err) || attempt === maxRetries) break;
+        await new Promise((r) => setTimeout(r, delays[Math.min(attempt, delays.length - 1)]));
+      }
+    }
+    throw lastErr;
+  }
+
+  /** Network errors (server restarting) and 5xx responses are worth retrying; 4xx and empty input are not. */
+  private static isRetryable(err: any): boolean {
+    const msg = String(err?.message || '');
+    if (err?.name === 'TypeError') return true; // fetch network failure (connection refused)
+    if (/Failed to fetch|NetworkError|Load failed|ECONNREFUSED/i.test(msg)) return true;
+    if (/TTS synthesis error \((5\d\d)\)/.test(msg)) return true;
+    if (/timed out/i.test(msg)) return true;
+    return false;
+  }
+
+  private async synthesizeOnce(
     text: string,
     options?: { voice?: string; speed?: number; timeoutMs?: number }
   ): Promise<Blob> {

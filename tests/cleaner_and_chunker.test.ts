@@ -60,3 +60,21 @@ test('KokoroClient: checks live Kokoro service on port 8880', async () => {
   assert.strictEqual(health.ok, true, 'Local Kokoro service on port 8880 should be reachable');
   assert.ok(Array.isArray(health.models), 'Models list should be returned');
 });
+
+test('KokoroClient: retries through a service restart', async () => {
+  const realFetch = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = (async () => {
+    calls++;
+    if (calls < 3) throw new TypeError('fetch failed'); // connection refused while launchd restarts Kokoro
+    return new Response(new Uint8Array([1, 2, 3]), { status: 200 });
+  }) as typeof fetch;
+  try {
+    const client = new KokoroClient();
+    const blob = await client.synthesize('hello', { maxRetries: 4 });
+    assert.strictEqual(calls, 3);
+    assert.strictEqual(blob.size, 3);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
